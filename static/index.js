@@ -1,32 +1,33 @@
-let words = [
-  {
-    inputs: 5,
-    category: "Sports",
-    word: "Chess",
-  },
-  {
-    inputs: 6,
-    category: "European Country Name",
-    word: "France",
-  },
-];
 $(document).ready(function () {
-  fillBlanks();
+  getTemplates();
 });
-function fillBlanks() {
-  const randomWord = words[Math.floor(Math.random() * words.length)];
+
+function getTemplates() {
+  $.ajax({
+    url: "/get-words",
+    type: "get",
+    success: function (result) {
+      fillBlanks(result.word);
+    },
+    error: function (result) {
+      alert(result.responseJSON.message);
+    },
+  });
+}
+
+function fillBlanks(randomWord) {
   $("#blanks").empty();
   for (let i = 0; i < randomWord.inputs; i++) {
     let input_html = `<span class="fill_blanks" id="input_${i}">_</span>`;
     $("#blanks").append(input_html);
   }
   $("#hint").html(randomWord.category);
-  let gameOver = false;
+  var gameOver = false;
   $(".clickable").click(function () {
-    let correctGuess = false;
+    var correctGuess = false;
     let id = $(this).attr("id");
-    let life = parseInt($("#life").text());
-    for (let i = 0; i < randomWord.word.length; i++) {
+    var life = parseInt($("#life").text());
+    for (var i = 0; i < randomWord.word.length; i++) {
       if (randomWord.word.charAt(i).toLowerCase() == id) {
         if (
           life > 0 &&
